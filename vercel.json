@@ -1,0 +1,10 @@
+{
+    "version": 2,
+    "jobs": {
+      "daily-python-job": {
+        "type": "cron",
+        "command": "python3 api/index.py",
+        "schedule": "15 21 * * *"
+      }
+    }
+  }
