@@ -2,7 +2,8 @@
     "crons": [
       {
         "path": "/api/index.py",
-        "schedule": "15 21 * * *"
+        "schedule": "15 21 * * *",
+        "maxDuration": 300
       }
     ],
     "functions": {
