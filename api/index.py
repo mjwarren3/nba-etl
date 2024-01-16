@@ -7,9 +7,6 @@ import pytz
 import sys
 import os
 
-database_url = os.environ.get('DATABASE_URL')  # Replace VARIABLE_NAME with the name of your variable
-database_key = os.environ.get('DATABASE_KEY')  # Replace VARIABLE_NAME with the name of your variable
-
 def log(message, level="INFO"):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"{timestamp} [{level}]: {message}")
@@ -161,8 +158,8 @@ def upload_players_to_supabase(for_db):
         section("UPLOADING PLAYERS")
 
         # Supabase details
-        url = database_url
-        key = database_key
+        url = os.environ.get('DATABASE_URL')
+        key = os.environ.get('DATABASE_KEY')
 
         log("Successfully retrieved URL and Key")
 
@@ -188,18 +185,18 @@ def upload_players_to_supabase(for_db):
         log(str(e), "ERROR")
 
 
-# Define main function
-def main(event, context):
-    leaders = get_league_leaders_df()
-    one_leaders = reduce_to_one_player_per_team(leaders)
-    one_leaders_with_next_matchups = get_next_matchup_by_player(one_leaders)
-    leaders_ppg = merge_next_matchups_with_league_leaders(leaders, one_leaders_with_next_matchups)
-    cleaned_players_df = clean_players_df(leaders_ppg)
-    for_db = add_opponent_column(cleaned_players_df)
-    upload_players_to_supabase(for_db)
+from http.server import BaseHTTPRequestHandler
 
-# Run it
-if __name__ == "__main__":
-    main()
+class handler(BaseHTTPRequestHandler):
 
+    # Define main function 
+    def do_GET(self):
+        
+        leaders = get_league_leaders_df()
+        one_leaders = reduce_to_one_player_per_team(leaders)
+        one_leaders_with_next_matchups = get_next_matchup_by_player(one_leaders)
+        leaders_ppg = merge_next_matchups_with_league_leaders(leaders, one_leaders_with_next_matchups)
+        cleaned_players_df = clean_players_df(leaders_ppg)
+        for_db = add_opponent_column(cleaned_players_df)
+        upload_players_to_supabase(for_db)
 
