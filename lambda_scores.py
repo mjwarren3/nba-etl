@@ -1,5 +1,4 @@
 import pandas as pd
-from config import DATABASE_URL, DATABASE_KEY
 from nba_api.stats.endpoints import leaguegamefinder
 from datetime import date, timedelta, datetime
 from nba_api.stats.endpoints import boxscoretraditionalv2
@@ -45,7 +44,7 @@ def get_schedule():
         return season_games
     
     except Exception as e:
-        log("An error occurred", "ERROR")
+        log(str(e), "ERROR")
 
 # Subset for yesterday's games
 def reduce_schedule_to_yesterday(season_games):
@@ -68,7 +67,7 @@ def reduce_schedule_to_yesterday(season_games):
             log("No games left in dataframe", "ERROR")
             
     except Exception as e:
-        log("An error occurred", "ERROR")
+        log(str(e), "ERROR")
 
 # Get box scores for all games in schedule
 def get_box_scores(schedule):
@@ -92,7 +91,7 @@ def get_box_scores(schedule):
         log(f"Successfully fetched {len(all_game_stats)} box scores")
         return all_game_stats
     except Exception as e:
-        log("An error occurred", "ERROR")
+        log(str(e), "ERROR")
 
 def get_clean_box_scores(all_game_stats):
 
@@ -129,7 +128,7 @@ def get_clean_box_scores(all_game_stats):
         return all_game_stats
     
     except Exception as e:
-        log("An error occurred", "ERROR")
+        log(str(e), "ERROR")
 
 def upload_scores_to_supabase(all_game_stats):
 
@@ -156,10 +155,10 @@ def upload_scores_to_supabase(all_game_stats):
         log(f"Successfully uploaded {len(all_game_stats)} rows to database. Finished!")
         return
     except Exception as e:
-        log("An error occurred", "ERROR")
+        log(str(e), "ERROR")
 
 # Define main function
-def main():
+def lambda_handler(event, context):
     schedule = get_schedule()
     yesterday_schedule = reduce_schedule_to_yesterday(schedule)
     box_scores = get_box_scores(yesterday_schedule)
@@ -169,4 +168,4 @@ def main():
 
 # Run it
 if __name__ == "__main__":
-    main()
+    lambda_handler()
